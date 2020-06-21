@@ -114,7 +114,7 @@ app.get('/signupsubmit',function(req,res){
 		
 		
 	
-		var cpwd = md5(req.query.cpwd)
+	var cpwd = md5(req.query.cpwd)
 	if(cpwd!=md5(pwd))
 	{
 		errors.push({msg:"Password and confirm password are not matching"});
@@ -135,51 +135,90 @@ app.get('/signupsubmit',function(req,res){
 	}
 	else
 	{
-
-		if(prodata.pwd == cpwd && prodata.pwd!=""){
-			db.sample1.find(prodata, function(err,dat){
-				if(dat.length>0){
-					console.log('profile already found')
-					errors.push({msg:"Profile already exist!!"})
-					res.render("signup",{errors});
-					
-				}
-				else{
-					var transporter = nodemailer.createTransport({
-					service: 'gmail',
-					auth: {
-					  user: 'ffaker909@gmail.com',
-					  pass: 'Imf@kef@ke'
-					}
-				  });
-				  
-				  var mailOptions = {
-					from: 'ffaker909@gmail.com',
-					to: email,
-					subject: 'NITK-LMS registration',
-					html: `<p>Hello ${name} roll no ${rno}... You are succesfully registered for NITK-LMS </p>`
-				  };
-				  
-				  transporter.sendMail(mailOptions, function(error, info){
-					if (error) {
-					  console.log(error);
-					} else {
-					  console.log('Email sent: ' + info.response);
-					}
-				  });
-					
-					db.sample1.insert(prodata,function(err,data){
-						if (err) {
-							console.log(err)
-						}
-						else{
-							console.log('inserted succesfully')
-							res.render('login')
-						}
-					})	
-				}
-			})
+		var rollno=
+		{
+			rno : req.query.rno
 		}
+		db.sample1.find(rollno,function(err,user)
+		{
+			if(user.length>0)
+			{
+				errors.push({msg:"Roll no already taken"})
+				res.render('signup',{errors});
+
+			}
+			else
+			{
+				var emails=
+				{
+					email : req.query.email,
+
+				}
+			 db.sample1.find(emails,function(err,user)
+			 {
+				 if(user.length>0)
+				 {
+					errors.push({msg:"Email already taken"})
+					res.render('signup',{errors});
+
+				 }
+				 else
+				 {
+					if(prodata.pwd == cpwd && prodata.pwd!=""){
+						db.sample1.find(prodata, function(err,dat){
+							if(dat.length>0){
+								console.log('profile already found')
+								errors.push({msg:"Profile already exist!!"})
+								res.render("signup",{errors});
+								
+							}
+							else{
+								var transporter = nodemailer.createTransport({
+								service: 'gmail',
+								auth: {
+								  user: 'namanvj14@gmail.com',
+								  pass: 'naman1411'
+								}
+							  });
+							  
+							  var mailOptions = {
+								from: 'namanvj14@gmail.com',
+								to: email,
+								subject: 'NITK-LMS registration',
+								html: `<p>Hello ${name} roll no ${rno}... You are succesfully registered for NITK-LMS </p>`
+							  };
+							  
+							  transporter.sendMail(mailOptions, function(error, info){
+								if (error) {
+								  console.log(error);
+								} else {
+								  console.log('Email sent: ' + info.response);
+								}
+							  });
+								
+								db.sample1.insert(prodata,function(err,data){
+									if (err) {
+										console.log(err)
+									}
+									else{
+										console.log('inserted succesfully')
+										res.render('login')
+									}
+								})	
+							}
+						})
+					}
+
+				 }
+			 })
+				
+			
+
+			}
+			
+		})
+
+		
 
 	}
 	
@@ -343,26 +382,41 @@ app.get('/newordersubmit',function(req,res){
 		let wash = req.query.wash
 		let iron = req.query.iron
 		let errors=[];
-		// if(!id || !sem || !hostel || !room )
-		// {
-		// 	errors.push({msg:"Pls fill the required section to book order"});
-
-
-		// }
-		// if(errors.length)
-		// {
-		// 	res.render("neworder",{errors,person:id});
-
-		// }
-
-		// if(!shirts && !pants && !jeans && !shorts && !towels && !mundu && !bsheets && !pillowc )
-		// errors.push({msg:"Select atleast one item to proceed"});
-		// if(errors.length)
-		// {
-		// 	res.render("neworder",{errors,person:id});
-
-		// }
+		
 	console.log(order)
+// 	var result = ""
+// db.collection("sample1").find({rno:id}).then(response => result =response )
+	
+	
+	
+	
+		
+		
+	
+	// var transporter = nodemailer.createTransport({
+	// 	service: 'gmail',
+	// 	auth: {
+	// 	  user: 'namanvj14@gmail.com',
+	// 	  pass: 'naman1411'
+	// 	}
+	//   });
+	  
+	//   var mailOptions = {
+	// 	from: 'namanvj14@gmail.com',
+	// 	to: result.email,
+	// 	subject: 'NITK-LMS registration',
+	// 	html: `<p>Hello ${result.uid} roll no ${id}. Thanks for booking order on NITK-LMS.Your uid is ${unid} and total amount is ${tamount} .This will get verified by admin within 2hrs.Check dashboard for more details.</p>`
+	//   };
+	  
+	//   transporter.sendMail(mailOptions, function(error, info){
+	// 	if (error) {
+	// 	  console.log(error);
+	// 	} else {
+	// 	  console.log('Email sent: ' + info.response);
+	// 	}
+	//   });
+
+
 	db.orders.insert(order,function(err,data){
 		if (err) {
 			console.log(err)
